@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 function Circle( {bgColor, borderColor, text="default text"} : CircleProps) {
+  //useState Type 설정은 <> 붙여준다
+  const [counter, setCounter] = useState<number|string>(1);
+
   return (
   <Container bgColor={bgColor} borderColor={borderColor ?? bgColor}>
     {text}
