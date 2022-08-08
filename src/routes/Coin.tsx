@@ -1,7 +1,9 @@
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Switch, Route, useLocation, useParams, useRouteMatch } from "react-router-dom";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { fetchCoinInfo, fetchCoinPrice } from "../api";
 import Chart from "./Chart";
 import Price from "./Price";
 
@@ -137,33 +139,38 @@ interface PriceData {
 }
 
 function Coin() {
-  const [info, setInfo] = useState<InfoData>();
-  const [priceInfo, setPriceInfo] = useState<PriceData>();
-  const [loading, setLoading] = useState(true);
   const { coinId } = useParams<RouteParams>();
   const { state } = useLocation<RouteState>();
   const priceMatch = useRouteMatch("/:coinId/price");
   const chartMatch = useRouteMatch("/:coinId/chart");
+  // const [info, setInfo] = useState<InfoData>();
+  // const [priceInfo, setPriceInfo] = useState<PriceData>();
+  // const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    (async () => {
-      const infoData = await (
-        await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
-      ).json();
-      const priceData = await (
-        await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
-      ).json();
-      setInfo(infoData);
-      setPriceInfo(priceData);
-      setLoading(false);
-    })();
-  }, [coinId]);
+  // useEffect(() => {
+  //   (async () => {
+  //     const infoData = await (
+  //       await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
+  //     ).json();
+  //     const priceData = await (
+  //       await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
+  //     ).json();
+  //     setInfo(infoData);
+  //     setPriceInfo(priceData);
+  //     setLoading(false);
+  //   })();
+  // }, [coinId]);
 
+  //React-Query로 간단하게 한줄로 쿼리 짜고 캐시기능까지 만들기
+  const { isLoading: infoLoading, data: infoData } = useQuery<InfoData>(["info", coinId], () => fetchCoinInfo(coinId));
+  const { isLoading: priceLoading, data: priceData } = useQuery<PriceData>(["price", coinId], () => fetchCoinPrice(coinId));
+
+  const loading = infoLoading || priceLoading
   return (
     <Container>
       <Header>
         <Title>
-          {state?.name ? state.name : loading ? "Loading..." : info?.name}
+          {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
         </Title>
       </Header>
       {loading ? (
@@ -173,26 +180,26 @@ function Coin() {
           <Overview>
             <OverviewItem>
               <span>Rank:</span>
-              <span>{info?.rank}</span>
+              <span>{infoData?.rank}</span>
             </OverviewItem>
             <OverviewItem>
               <span>Symbol:</span>
-              <span>${info?.symbol}</span>
+              <span>${infoData?.symbol}</span>
             </OverviewItem>
             <OverviewItem>
               <span>Open Source:</span>
-              <span>{info?.open_source ? "Yes" : "No"}</span>
+              <span>{infoData?.open_source ? "Yes" : "No"}</span>
             </OverviewItem>
           </Overview>
-          <Description>{info?.description}</Description>
+          <Description>{infoData?.description}</Description>
           <Overview>
             <OverviewItem>
               <span>Total Suply:</span>
-              <span>{priceInfo?.total_supply}</span>
+              <span>{priceData?.total_supply}</span>
             </OverviewItem>
             <OverviewItem>
               <span>Max Supply:</span>
-              <span>{priceInfo?.max_supply}</span>
+              <span>{priceData?.max_supply}</span>
             </OverviewItem>
           </Overview>
 
@@ -210,7 +217,7 @@ function Coin() {
               <Price />
             </Route>
             <Route path={`/:coinId/chart`}>
-              <Chart />
+              <Chart coinId={coinId} />
             </Route>
           </Switch>
         </>
