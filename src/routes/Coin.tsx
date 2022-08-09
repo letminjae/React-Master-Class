@@ -1,6 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Switch, Route, useLocation, useParams, useRouteMatch } from "react-router-dom";
+import {
+  Switch,
+  Route,
+  useLocation,
+  useParams,
+  useRouteMatch,
+} from "react-router-dom";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoinInfo, fetchCoinPrice } from "../api";
@@ -162,10 +168,18 @@ function Coin() {
   // }, [coinId]);
 
   //React-Query로 간단하게 한줄로 쿼리 짜고 캐시기능까지 만들기
-  const { isLoading: infoLoading, data: infoData } = useQuery<InfoData>(["info", coinId], () => fetchCoinInfo(coinId));
-  const { isLoading: priceLoading, data: priceData } = useQuery<PriceData>(["price", coinId], () => fetchCoinPrice(coinId));
+  const { isLoading: infoLoading, data: infoData } = useQuery<InfoData>(
+    ["info", coinId],
+    () => fetchCoinInfo(coinId)
+  );
+  const { isLoading: priceLoading, data: priceData } = useQuery<PriceData>(
+    ["price", coinId],
+    () => fetchCoinPrice(coinId),
+    //useQuery 3번째는 옵션설정 : object 부여해서 옵션설정가능. refetchInterval 5초마다 쿼리 fetch. price값 5초마다 업데이트 시킴
+    { refetchInterval: 5000 }
+  );
 
-  const loading = infoLoading || priceLoading
+  const loading = infoLoading || priceLoading;
   return (
     <Container>
       <Header>
@@ -187,8 +201,8 @@ function Coin() {
               <span>${infoData?.symbol}</span>
             </OverviewItem>
             <OverviewItem>
-              <span>Open Source:</span>
-              <span>{infoData?.open_source ? "Yes" : "No"}</span>
+              <span>Price:</span>
+              <span>${priceData?.quotes.USD.price.toFixed(2)}</span>
             </OverviewItem>
           </Overview>
           <Description>{infoData?.description}</Description>
