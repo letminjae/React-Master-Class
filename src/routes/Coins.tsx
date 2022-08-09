@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoins } from "../api";
@@ -84,11 +85,14 @@ function Coins() {
 
   //이 여러줄을 한줄로 축약.. React-Query 짱! => 더불어 캐시기능까지..
   const { isLoading, data } = useQuery<ICoin[]>(["allCoins"], fetchCoins);
-  
+
   return (
     <Container>
+      <Helmet>
+        <title>COIN TRACKER</title>
+      </Helmet>
       <Header>
-        <Title>Coin List</Title>
+        <Title>COIN TRACKER</Title>
       </Header>
       {isLoading ? (
         <Loader>Loading...</Loader>
