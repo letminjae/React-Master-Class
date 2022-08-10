@@ -44,6 +44,9 @@ function Chart({ coinId }: ChartProps) {
             chart: {
               height: 300,
               width: 500,
+              animations: {
+                enabled: false,
+              },
               toolbar: {
                 show: false,
               },
