@@ -190,7 +190,7 @@ function Coin() {
     ["price", coinId],
     () => fetchCoinPrice(coinId),
     //useQuery 3번째는 옵션설정 : object 부여해서 옵션설정가능. refetchInterval 5초마다 쿼리 fetch. price값 5초마다 업데이트 시킴
-    { refetchInterval: 5000 }
+    // { refetchInterval: 5000 }
   );
 
   console.log(priceData);

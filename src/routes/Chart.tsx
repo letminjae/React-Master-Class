@@ -7,8 +7,8 @@ interface ChartProps {
 }
 
 interface IHistorical {
-  time_open: string;
-  time_close: string;
+  time_open: number;
+  time_close: number;
   open: string;
   high: string;
   low: string;
@@ -17,11 +17,15 @@ interface IHistorical {
   market_cap: string;
 }
 
+interface ICandleChartXY {
+  x: Date;
+  y: number[];
+}
+
 function Chart({ coinId }: ChartProps) {
   const { isLoading, data } = useQuery<IHistorical[]>(
     ["ohlcv", coinId],
     () => fetchCoinHistory(coinId),
-    { refetchInterval: 10000 }
   );
 
   return (
@@ -30,11 +34,21 @@ function Chart({ coinId }: ChartProps) {
         "Loading chart..."
       ) : (
         <ApexChart
-          type="line"
+          type="candlestick"
           series={[
             {
               name: "Price",
-              data: data?.map((price) => parseFloat(price.close)) ?? [],
+              data: data?.map((price) => {
+                return {
+                  x: new Date(price.time_open * 1000),
+                  y: [
+                    parseFloat(price.open),
+                    parseFloat(price.high),
+                    parseFloat(price.low),
+                    parseFloat(price.close),
+                  ],
+                };
+              }) as ICandleChartXY[],
             },
           ]}
           options={{
@@ -42,13 +56,10 @@ function Chart({ coinId }: ChartProps) {
               mode: "dark",
             },
             chart: {
-              height: 300,
+              height: 350,
               width: 500,
               animations: {
                 enabled: false,
-              },
-              toolbar: {
-                show: false,
               },
               background: "transparent",
             },
@@ -66,18 +77,26 @@ function Chart({ coinId }: ChartProps) {
               labels: { show: false },
               type: "datetime",
               categories: data?.map(
-                (price) => parseInt(price.time_close) * 1000
+                (price) => price.time_close * 1000
               ),
             },
-            fill: {
-              type: "gradient",
-              gradient: { gradientToColors: ["#0be881"], stops: [0, 100] },
-            },
-            colors: ["#0fbcf9"],
+            // fill: {
+            //   type: "gradient",
+            //   gradient: { gradientToColors: ["#0be881"], stops: [0, 100] },
+            // },
+            // colors: ["#0fbcf9"],
             tooltip: {
               y: {
                 formatter: (value) => `$${value.toFixed(2)}`,
               },
+            },
+            plotOptions: {
+              candlestick: {
+                colors: {
+                  upward: '#DF7D46',
+                  downward: '#3C90EB',
+                }
+              }
             },
           }}
         />
