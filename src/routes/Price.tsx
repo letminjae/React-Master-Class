@@ -98,7 +98,7 @@ const PriceBox = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: ${(props) => props.theme.accentColor};
+  background-color: #fe6f5e;
   padding: 30px 20px;
   border-radius: 5px;
   color: ${(props) => props.theme.textColor};

@@ -1,6 +1,11 @@
-import { createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import Router from "./Router";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ThemeProvider } from "styled-components";
+import { darkTheme, lightTheme } from "./theme";
+import { useState } from "react";
+import { MdNightlightRound } from "react-icons/md";
+import { BsSun } from "react-icons/bs";
 
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
@@ -67,12 +72,36 @@ a {
 }
 `;
 
+const ToggleBtn = styled.button`
+  position: absolute;
+  left: 80%;
+  margin: 30px 10px 0px 10px;
+  border-radius: 100%;
+  border: 1px solid ${(props) => props.theme.textColor};
+  width: 50px;
+  height: 50px;
+  background-color: whitesmoke;
+  cursor: pointer;
+  &:hover {
+    transform: scale(1.1, 1.1);
+  }
+`
+
 function App() {
+  const [isDark, setIsDark] = useState(false);
+
+  const toggleDark = () => setIsDark((currentValue) => !currentValue);
+
   return (
     <>
-      <GlobalStyle />
-      <Router />
-      <ReactQueryDevtools initialIsOpen={true} />
+      <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+        <ToggleBtn onClick={toggleDark}>
+          {isDark ? <BsSun fontSize={20}/> : <MdNightlightRound fontSize={20}/>}
+        </ToggleBtn>
+        <GlobalStyle />
+        <Router />
+        <ReactQueryDevtools initialIsOpen={true} />
+      </ThemeProvider>
     </>
   );
 }

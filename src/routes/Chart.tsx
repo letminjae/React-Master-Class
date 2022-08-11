@@ -62,6 +62,9 @@ function Chart({ coinId }: ChartProps) {
                 enabled: false,
               },
               background: "transparent",
+              toolbar: {
+                show: false,
+              },
             },
             grid: { show: false },
             stroke: {
