@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoins } from "../api";
+import bitcoin from "../bitcoin.gif";
 
 const Container = styled.div`
   padding: 0px 20px;
@@ -40,18 +41,26 @@ const Coin = styled.li`
 
 const Title = styled.h1`
   font-size: 48px;
+  font-weight: 500;
   color: ${(props) => props.theme.accentColor};
 `;
 
-const Loader = styled.span`
-  text-align: center;
-  display: block;
+const Loader = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30vh;
 `;
 
 const Img = styled.img`
   width: 35px;
   height: 35px;
   margin-right: 10px;
+`;
+
+const LoadingImg = styled.img`
+  width: 300px;
+  height: 300px;
 `;
 
 interface CoinInterface {
@@ -95,7 +104,9 @@ function Coins() {
         <Title>COIN TRACKER</Title>
       </Header>
       {isLoading ? (
-        <Loader>Loading...</Loader>
+        <Loader>
+          <LoadingImg src={bitcoin} alt="Loading Img"/>
+        </Loader>
       ) : (
         <CoinsList>
           {data?.slice(0, 100).map((coin) => (
@@ -109,7 +120,7 @@ function Coins() {
                 <Img
                   src={`https://coinicons-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`}
                 />
-                {coin.name} &rarr;
+                {coin.name}
               </Link>
             </Coin>
           ))}

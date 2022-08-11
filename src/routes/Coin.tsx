@@ -16,9 +16,20 @@ import Chart from "./Chart";
 import Price from "./Price";
 import { BsArrowLeft } from "react-icons/bs";
 
-const Title = styled.h1`
+const Title = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
   font-size: 48px;
+  font-weight: 500;
   color: ${(props) => props.theme.accentColor};
+  span {
+    color: ${(props) => props.theme.textColor};
+    font-size: 36px;
+    cursor: pointer;
+  }
 `;
 
 const Loader = styled.span`
@@ -63,6 +74,7 @@ const OverviewItem = styled.div`
 
 const Description = styled.p`
   margin: 20px 0px;
+  font-size: 18px;
 `;
 
 const Tabs = styled.div`
@@ -85,15 +97,6 @@ const Tab = styled.span<{ isActive: boolean }>`
   a {
     display: block;
   }
-`;
-
-const Home = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 28px;
-  font-weight: 800;
-  cursor: pointer;
 `;
 
 interface RouteParams {
@@ -188,12 +191,10 @@ function Coin() {
   );
   const { isLoading: priceLoading, data: priceData } = useQuery<PriceData>(
     ["price", coinId],
-    () => fetchCoinPrice(coinId),
+    () => fetchCoinPrice(coinId)
     //useQuery 3번째는 옵션설정 : object 부여해서 옵션설정가능. refetchInterval 5초마다 쿼리 fetch. price값 5초마다 업데이트 시킴
     // { refetchInterval: 5000 }
   );
-
-  console.log(priceData);
 
   const history = useHistory();
 
@@ -213,10 +214,10 @@ function Coin() {
         <Header>
           <Title>
             {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
+            <span>
+              <BsArrowLeft onClick={goToHome} />
+            </span>
           </Title>
-          <Home>
-            <BsArrowLeft onClick={goToHome} />
-          </Home>
         </Header>
         {loading ? (
           <Loader>Loading...</Loader>
@@ -237,7 +238,7 @@ function Coin() {
               </OverviewItem>
             </Overview>
             <Description>{infoData?.description}</Description>
-            <Overview>
+            <Overview style={{ justifyContent: "center", gap: "170px" }}>
               <OverviewItem>
                 <span>Total Suply:</span>
                 <span>{priceData?.total_supply}</span>
