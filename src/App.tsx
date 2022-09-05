@@ -6,6 +6,8 @@ import { darkTheme, lightTheme } from "./theme";
 import { useState } from "react";
 import { MdNightlightRound } from "react-icons/md";
 import { BsSun } from "react-icons/bs";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { isDarkAtom } from "./atoms";
 
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
@@ -88,14 +90,17 @@ const ToggleBtn = styled.button`
 `
 
 function App() {
-  const [isDark, setIsDark] = useState(false);
+  // useState의 State 값 = useRecoilValue()
+  const isDark = useRecoilValue(isDarkAtom);
+  // useState의 setState 값 = useSetRecoilState()
+  const setDarkAtom = useSetRecoilState(isDarkAtom);
 
-  const toggleDark = () => setIsDark((currentValue) => !currentValue);
+  const toggleDarkAtom = () => setDarkAtom((prev) => !prev);
 
   return (
     <>
       <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
-        <ToggleBtn onClick={toggleDark}>
+        <ToggleBtn onClick={toggleDarkAtom}>
           {isDark ? <BsSun fontSize={20}/> : <MdNightlightRound fontSize={20}/>}
         </ToggleBtn>
         <GlobalStyle />
