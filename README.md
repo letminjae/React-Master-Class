@@ -210,21 +210,25 @@ funtion App() {
 ### **React Query**
 
 - React Query란?
+
   ```jsx
   npm install react-query
   ```
+
   - fetch 메소드를 이용해 useEffect로 데이터를 끌어오는 방식
+
   ```jsx
   useEffect(() => {
     (async () => {
       const response = await fetch("https://api키를 가진 URL 주소");
       const json = await response.json();
       console.log(json);
-    })()
-  }, [])
+    })();
+  }, []);
   ```
+
   - 하지만, 데이터를 계속해서 fetching 하는데에는 한계가있다. => `캐싱을 꼭 해줘야 불필요한 데이터를 fetching 하지않음` => 우리는 왜 Loading 창을 계속 봐야하는가??
-  
+
   - 타입스크립트를 사용할 시 데이터의 타입들을 일일히 설정해줘야한다. interface에 타입이 수백개가 있다면 언제 일일히 다 작성하겠는가??
 
   - React 애플리케이션에서 서버 state를 `fetching, caching, synchronizing, updating할 수 있도록 도와주는 라이브러리`
@@ -237,66 +241,178 @@ funtion App() {
     ```
 
 - React-Query 사용법
+
   1. Query Client 및 Provider 생성
-    - index.tsx에서 `QueryClientProvider` 생성, client를 new QueryClient()로 설정한 뒤 감싸준다.
-    ```jsx
-    const queryClient = new QueryClient();
 
-    const root = ReactDOM.createRoot(
-      document.getElementById("root") as HTMLElement
-    );
-    root.render(
-      <>
-        <QueryClientProvider client={queryClient}>
-          <App />
-        </QueryClientProvider>
-      </>
-    );
-    ```
+  - index.tsx에서 `QueryClientProvider` 생성, client를 new QueryClient()로 설정한 뒤 감싸준다.
+
+  ```jsx
+  const queryClient = new QueryClient();
+
+  const root = ReactDOM.createRoot(
+    document.getElementById("root") as HTMLElement
+  );
+  root.render(
+    <>
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
+    </>
+  );
+  ```
+
   2. fetcher Funtion 만들어주기
-    - api.ts 파일을 만들어 useEffect에 있던 `fetcher funtion을 따로 만들어준다.` (asnyc await는 코드가 길어 promise 사용)
-    ```jsx
-    const BASE_URL = `https://api.coinpaprika.com/v1`;
 
-    export function fetchCoins() {
-      return fetch(`${BASE_URL}/coins`).then((response) => response.json());
-    }
-    ```
+  - api.ts 파일을 만들어 useEffect에 있던 `fetcher funtion을 따로 만들어준다.` (asnyc await는 코드가 길어 promise 사용)
+
+  ```jsx
+  const BASE_URL = `https://api.coinpaprika.com/v1`;
+
+  export function fetchCoins() {
+    return fetch(`${BASE_URL}/coins`).then((response) => response.json());
+  }
+  ```
+
   3. 데이터를 부를 컴포넌트에 `useQuery` 사용 => useQuery는 데이터를 부르는 react-query의 핵심 메소드!
 
-    - `isLoading` : 데이터가 fetch 됐는지 알려주는 boolean 값
-    - `data` : fetch 된 api 데이터의 값
-    - `["allCoins"]` : data array의 변수 이름 => `Query의 이름`
-    - `fetchCoins` : api.ts의 fetcher function
-    
-    ```jsx
-    interface ICoin {
-    id: string;
-    name: string;
-    symbol: string;
-    }
+  - `isLoading` : 데이터가 fetch 됐는지 알려주는 boolean 값
+  - `data` : fetch 된 api 데이터의 값
+  - `["allCoins"]` : data array의 변수 이름 => `Query의 이름`
+  - `fetchCoins` : api.ts의 fetcher function
 
-    const { isLoading, data } = useQuery<ICoin[]>(["allCoins"], fetchCoins);
-    ```
+  ```jsx
+  interface ICoin {
+  id: string;
+  name: string;
+  symbol: string;
+  }
 
-    - 한 컴포넌트에 쿼리가 여러개 들어간다면, 고유 이름을 다르게 바꿔줄 수 있다.
-    ```jsx
-    const { isLoading: infoLoading, data: infoData } = useQuery<InfoData>(
-    ["info", coinId],
-    () => fetchCoinInfo(coinId)
-    );
-    ```
+  const { isLoading, data } = useQuery<ICoin[]>(["allCoins"], fetchCoins);
+  ```
+
+  - 한 컴포넌트에 쿼리가 여러개 들어간다면, 고유 이름을 다르게 바꿔줄 수 있다.
+
+  ```jsx
+  const { isLoading: infoLoading, data: infoData } =
+    useQuery < InfoData > (["info", coinId], () => fetchCoinInfo(coinId));
+  ```
 
   4. React-Query-Devtools 사용
-    - React Query의 모든 내부 작동을 시각화하는 데 도움이 되며 문제가 발생하면 디버깅 시간을 절약할 수 있는 툴
 
-    ```jsx
-    import { ReactQueryDevtools } from 'react-query/devtools';
-    
-    <ReactQueryDevtools initialIsOpen={false} />
-    ```
+  - React Query의 모든 내부 작동을 시각화하는 데 도움이 되며 문제가 발생하면 디버깅 시간을 절약할 수 있는 툴
 
-- Apex Chart 사용법
+  ```jsx
+  import { ReactQueryDevtools } from "react-query/devtools";
+
+  <ReactQueryDevtools initialIsOpen={false} />;
+  ```
+
+- Apex Chart
+
+  - 현대적이고 인터랙티브한 오픈 소스 차트 라이브러리
+
+  ```jsx
+  npm install --save react-apexcharts apexcharts
+  ```
+
+  - `type` : 차트 유형 (String) (기본값 ‘line’)
+  - `series` : 차트에 표시하려는 데이터 (Array) (기본값 undefined)
+  - `width, height` : 차트의 너비 (String || Number) (기본값 ‘100%’), 차트의 높이 (String || Number) (기본값 auto)
+  - `options`: 차트의 구성 옵션 (Object) (기본값 {})
+
+  ```jsx
+  import ApexChart from "react-apexcharts";
+
+  interface ICandleChartXY {
+    x: Date;
+    y: number[];
+  }
+
+  <>
+    <ApexChart
+      type="candlestick"
+      series={[
+        {
+          name: "Price",
+          data: data?.map((price) => {
+            return {
+              x: new Date(price.time_open * 1000),
+              y: [
+                parseFloat(price.open),
+                parseFloat(price.high),
+                parseFloat(price.low),
+                parseFloat(price.close),
+              ],
+            };
+          }) as ICandleChartXY[],
+        },
+      ]}
+      options={{
+        theme: {
+          mode: "dark",
+        },
+        chart: {
+          height: 350,
+          width: 500,
+          animations: {
+            enabled: false,
+          },
+          background: "transparent",
+          toolbar: {
+            show: false,
+          },
+        },
+        grid: { show: false },
+        stroke: {
+          curve: "smooth",
+          width: 4,
+        },
+        yaxis: {
+          show: false,
+        },
+        xaxis: {
+          axisBorder: { show: false },
+          axisTicks: { show: false },
+          labels: { show: false },
+          type: "datetime",
+          categories: data?.map(
+            (price) => price.time_close * 1000
+          ),
+        },
+        tooltip: {
+          y: {
+            formatter: (value) => `$${value.toFixed(2)}`,
+          },
+        },
+        plotOptions: {
+          candlestick: {
+            colors: {
+              upward: '#DF7D46',
+              downward: '#3C90EB',
+            }
+          }
+        },
+      }}
+    />
+    </>
+  ```
 
 - React-Helmet
+  - 컴포넌트 render 시 문서의 Head로 가 페이지의 이름이 변경되게 하는 라이브러리
+  ```jsx
+  npm i react-helmet
+  npm i --save-dev @types/react-helmet
+  ```
 
+  - HTML HEAD에 영향을 주어 검색엔진에 타이틀이 노출되게끔 만들수있다.
+  ```jsx
+  //Coin.tsx
+  import { Helmet } from "react-helmet";
+
+  //state.name = 코인 상세 페이지의 코인 이름
+  <Helmet>
+    <title>
+      {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
+    </title>
+  </Helmet>
+  ```
